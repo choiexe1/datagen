@@ -1,0 +1,116 @@
+{
+  "template": {
+    "name": "운전면허증",
+    "image": "images/templates/driver_license_template.png",
+    "size": {"width": 1200, "height": 764}
+  },
+  "fields": [
+    {
+      "id": "name_korean",
+      "name": "이름(한글)",
+      "position": {"x": 0, "y": 0},
+      "font_size": 28,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "data_source": "texts/name_korean.txt",
+      "comment": "한글 이름 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "license_number",
+      "name": "운전면허번호",
+      "position": {"x": 0, "y": 0},
+      "font_size": 24,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "pattern": "NN-NN-NNNNNN-NN",
+      "comment": "면허번호 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "resident_number",
+      "name": "주민등록번호",
+      "position": {"x": 0, "y": 0},
+      "font_size": 22,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "pattern": "YYMMDD-NNNNNNN",
+      "comment": "주민등록번호 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "license_type",
+      "name": "면허종류",
+      "position": {"x": 0, "y": 0},
+      "font_size": 20,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "choices": ["1종보통", "1종대형", "2종보통", "2종소형", "원동기"],
+      "comment": "면허종류 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "address",
+      "name": "주소",
+      "position": {"x": 0, "y": 0},
+      "max_width": 350,
+      "font_size": 18,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "data_source": "texts/address.txt",
+      "multiline": true,
+      "comment": "주소 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "renewal_start_date",
+      "name": "적성검사 시작일",
+      "position": {"x": 0, "y": 0},
+      "font_size": 18,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "pattern": "YYYY.MM.DD",
+      "comment": "적성검사 시작일 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "renewal_end_date",
+      "name": "적성검사 종료일",
+      "position": {"x": 0, "y": 0},
+      "font_size": 18,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "pattern": "YYYY.MM.DD",
+      "comment": "적성검사 종료일 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "security_code",
+      "name": "보안코드",
+      "position": {"x": 0, "y": 0},
+      "font_size": 16,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "pattern": "NNNNNN",
+      "comment": "6자리 보안코드 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "issue_date",
+      "name": "발급일자",
+      "position": {"x": 0, "y": 0},
+      "font_size": 18,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "pattern": "YYYY.MM.DD",
+      "comment": "발급일자 위치 - 좌표 측정 필요"
+    },
+    {
+      "id": "issuing_authority",
+      "name": "발급기관",
+      "position": {"x": 0, "y": 0},
+      "font_size": 18,
+      "font_color": [0, 0, 0],
+      "font_style": "regular",
+      "data_source": "texts/issuing_authority.txt",
+      "comment": "발급기관 위치 - 좌표 측정 필요"
+    }
+  ],
+  "notes": [
+    "모든 좌표는 텍스트 시작점(좌상단) 기준",
+    "font_color는 BGR 형식 (OpenCV 기준)",
+    "coordinate_picker.py로 실제 좌표 측정 후 업데이트 필요"
+  ]
+}

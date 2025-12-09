@@ -1,0 +1,92 @@
+{
+    "template": {
+        "path": "images/templates/id_card_template.png",
+        "width": 1200,
+        "height": 764
+    },
+    "fonts": {
+        "gothic": "fonts/윤고딕330.ttf",
+        "serif": "fonts/YeolrinMyeongjo-Medium.ttf",
+        "serif_bold": "fonts/YeolrinMyeongjo-Bold.ttf",
+        "sans": "fonts/NotoSansCJK-Regular.ttc",
+        "gulim": "fonts/Gulim.ttf",
+        "gulimche": "fonts/GulimChe.ttf",
+        "pretendard": "fonts/Pretendard-Regular.ttf",
+        "pretendard_bold": "fonts/Pretendard-Bold.ttf",
+        "pretendard_semibold": "fonts/Pretendard-SemiBold.ttf"
+    },
+    "fields": {
+        "title": {
+            "x": 144,
+            "y": 62,
+            "font_size": 70,
+            "font_type": "serif_bold",
+            "font_color": [0, 0, 0],
+            "text": "주 민 등 록 증"
+        },
+        "name": {
+            "x": 132,
+            "y": 203,
+            "font_size": 56,
+            "font_type": "serif",
+            "font_color": [0, 0, 0],
+            "text": "서하민"
+        },
+        "name_hanja": {
+            "x": 297,
+            "y": 203,
+            "font_size": 58,
+            "font_type": "serif",
+            "font_color": [0, 0, 0],
+            "text": "(徐夏珉)"
+        },
+        "jumin": {
+            "x": 96,
+            "y": 303,
+            "font_size": 60,
+            "font_type": "gulimche",
+            "font_color": [0, 0, 0],
+            "text": "860313-4224165"
+        },
+        "address1": {
+            "x": 68,
+            "y": 396,
+            "font_size": 48,
+            "font_type": "pretendard_semibold",
+            "font_color": [0, 0, 0],
+            "text": "대전광역시 중구 천근로69번"
+        },
+        "address2": {
+            "x": 68,
+            "y": 446,
+            "font_size": 48,
+            "font_type": "pretendard_semibold",
+            "font_color": [0, 0, 0],
+            "text": "길 114, 1968동 2162호"
+        },
+        "address3": {
+            "x": 68,
+            "y": 496,
+            "font_size": 48,
+            "font_type": "pretendard_semibold",
+            "font_color": [0, 0, 0],
+            "text": "(문화동,계룡문화아파트)"
+        },
+        "issue_date": {
+            "x": 500,
+            "y": 584,
+            "font_size": 40,
+            "font_type": "serif_bold",
+            "font_color": [0, 0, 0],
+            "text": "2046. 07. 28."
+        },
+        "issuer": {
+            "x": 268,
+            "y": 645,
+            "font_size": 54,
+            "font_type": "serif_bold",
+            "font_color": [0, 0, 0],
+            "text": "서울특별시 종로구청장"
+        }
+    }
+}
