@@ -1,0 +1,8 @@
+{
+    "fonts": {
+        "sans": "fonts/NotoSansCJK-Regular.ttc",
+        "nanum_myeongjo": "fonts/NanumMyeongjo-YetHangul.ttf",
+        "human_myeongjo": "fonts/휴먼명조.ttf",
+        "nanum_square": "fonts/NanumSquareR.ttf"
+    }
+}
