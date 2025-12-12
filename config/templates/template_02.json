@@ -2,10 +2,10 @@
     "template_path": "templates/id_template_empty_02.png",
     "face_region": {
         "x": 376,
-        "y": 82,
+        "y": 86,
         "width": 268,
         "height": 210,
-        "rotation": 1.5,
+        "rotation": 1.1,
         "effects": {
             "blur": 0.9,
             "noise": 8,
@@ -45,7 +45,7 @@
                 "font_type": "sans",
                 "font_color": [0, 0, 0],
                 "space_width": 0.7,
-                "stroke_width": 0.63,
+                "stroke_width": 0.67,
                 "stroke_fill": "#000000",
                 "effects": { "blur": 0.48, "noise": 0, "fade": 0.51 }
             },
@@ -53,7 +53,7 @@
                 "x": 83,
                 "y": 230,
                 "font_size": 21,
-                "font_type": "nanum_myeongjo",
+                "font_type": "nanum_square",
                 "font_color": [0, 0, 0],
                 "max_width": 290,
                 "line_height": 26,
@@ -74,7 +74,7 @@
             "issuer": {
                 "x": 216,
                 "y": 363,
-                "font_size": 25,
+                "font_size": 24,
                 "font_type": "nanum_square",
                 "font_color": [0, 0, 0],
                 "stroke_width": 0.7,
