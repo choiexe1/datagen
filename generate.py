@@ -24,6 +24,11 @@ def main():
         action="store_true",
         help="사용 가능한 템플릿 목록 출력",
     )
+    parser.add_argument(
+        "-r", "--random",
+        action="store_true",
+        help="템플릿 랜덤 분배 (총 n개 생성, 템플릿 랜덤 선택)",
+    )
 
     args = parser.parse_args()
 
@@ -57,6 +62,15 @@ def main():
 
     if template_path:
         results = generator.generate_batch(args.count, template_path=template_path)
+    elif args.random:
+        # 랜덤 분배: 총 n개, 템플릿 랜덤 선택
+        results = []
+        for i in range(args.count):
+            result = generator.generate_single(i)  # template_path=None이면 랜덤
+            results.append(result)
+            if (i + 1) % 10 == 0:
+                print(f"생성: {i + 1}/{args.count}")
+        print(f"✅ {len(results)}개 주민등록증 생성 완료")
     else:
         results = generator.generate_all_templates(count_per_template=args.count)
 
