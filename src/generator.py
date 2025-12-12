@@ -98,11 +98,13 @@ class IDCardGenerator:
 
         Args:
             effects: {
-                "blur": 0.9,      # 블러 강도
-                "noise": 9,       # 노이즈 강도
-                "aged": true,     # 오래된 사진 효과
-                "contrast": 0.88, # 대비 (1.0이면 변화 없음)
-                "saturation": 0.82  # 채도 (1.0이면 변화 없음)
+                "blur": 0.9,        # 블러 강도
+                "noise": 9,         # 노이즈 강도
+                "aged": true,       # 오래된 사진 효과
+                "contrast": 0.88,   # 대비 (1.0이면 변화 없음)
+                "saturation": 0.82, # 채도 (1.0이면 변화 없음)
+                "brightness": 0.75, # 밝기 (1.0이면 변화 없음, <1 어둡게)
+                "gamma": 1.2        # 감마 (1.0이면 변화 없음, >1 어둡게)
             }
         """
         blur = effects.get("blur", 0)
@@ -110,6 +112,8 @@ class IDCardGenerator:
         aged = effects.get("aged", False)
         contrast = effects.get("contrast", 1.0)
         saturation = effects.get("saturation", 1.0)
+        brightness = effects.get("brightness", 1.0)
+        gamma = effects.get("gamma", 1.0)
 
         # 블러 적용
         if blur > 0:
@@ -124,7 +128,15 @@ class IDCardGenerator:
 
         # 대비 조정
         if contrast != 1.0:
-            img_array = img_array * contrast + 128 * (1 - contrast)
+            img_array[:, :, :3] = img_array[:, :, :3] * contrast + 128 * (1 - contrast)
+
+        # 밝기 조정 (어두운 템플릿용)
+        if brightness != 1.0:
+            img_array[:, :, :3] = img_array[:, :, :3] * brightness
+
+        # 감마 보정 (비선형 밝기 조정)
+        if gamma != 1.0:
+            img_array[:, :, :3] = 255 * np.power(img_array[:, :, :3] / 255, gamma)
 
         # 오래된 사진 효과 (황변)
         if aged:
