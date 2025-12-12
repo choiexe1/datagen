@@ -6,7 +6,13 @@
         "width": 170,
         "height": 297,
         "rotation": 0,
-        "effects": { "blur": 0.9, "noise": 9, "aged": true, "contrast": 0.88, "saturation": 0.82 }
+        "effects": {
+            "blur": 0.9,
+            "noise": 9,
+            "aged": true,
+            "contrast": 0.88,
+            "saturation": 0.82
+        }
     },
     "text": {
         "rotation": 0,
