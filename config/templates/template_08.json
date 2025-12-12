@@ -1,15 +1,21 @@
 {
     "template_path": "templates/id_template_empty_08.png",
     "face_region": {
-        "x": 369,
-        "y": 27,
-        "width": 170,
-        "height": 297,
-        "rotation": 0,
-        "effects": { "blur": 0.9, "noise": 9, "aged": true, "contrast": 0.88, "saturation": 0.82 }
+        "x": 395,
+        "y": -120,
+        "width": 182,
+        "height": 594,
+        "rotation": -2,
+        "effects": {
+            "blur": 0.9,
+            "noise": 9,
+            "aged": true,
+            "contrast": 0.88,
+            "saturation": 0.82
+        }
     },
     "text": {
-        "rotation": 0,
+        "rotation": -2,
         "fields": {
             "name": {
                 "x": 130,
@@ -17,61 +23,61 @@
                 "font_size": 25,
                 "font_type": "human_myeongjo",
                 "font_color": [0, 0, 0],
-                "stroke_width": 0.32,
+                "stroke_width": 0.7,
                 "stroke_fill": "#000000",
                 "effects": { "blur": 0.6, "noise": 3, "fade": 0.5 }
             },
             "name_hanja": {
-                "x": 207,
+                "x": 211,
                 "y": 119,
                 "font_size": 25,
                 "font_type": "nanum_myeongjo",
                 "font_color": [0, 0, 0],
                 "space_width": 0.2,
-                "stroke_width": 0.32,
+                "stroke_width": 0.7,
                 "stroke_fill": "#000000",
-                "effects": { "blur": 0.7, "noise": 3, "fade": 0.5 }
+                "effects": { "blur": 0.4, "noise": 3, "fade": 0.5 }
             },
             "jumin": {
-                "x": 125,
+                "x": 129,
                 "y": 162,
                 "font_size": 19,
                 "font_type": "sans",
                 "font_color": [0, 0, 0],
                 "space_width": 0.7,
-                "stroke_width": 0.24,
+                "stroke_width": 0.8,
                 "stroke_fill": "#000000",
-                "effects": { "blur": 0.3, "noise": 0, "fade": 0.58 }
+                "effects": { "blur": 0.3, "noise": 0, "fade": 0.55 }
             },
             "address": {
                 "x": 115,
                 "y": 199,
-                "font_size": 16.5,
-                "font_type": "nanum_myeongjo",
+                "font_size": 18,
+                "font_type": "nanum_square",
                 "font_color": [0, 0, 0],
                 "max_width": 230,
                 "line_height": 22,
-                "stroke_width": 0.4,
+                "stroke_width": 0.7,
                 "stroke_fill": "#000000",
                 "effects": { "blur": 0.19, "noise": 2, "fade": 0.56 }
             },
             "issue_date": {
-                "x": 267,
-                "y": 279,
-                "font_size": 18,
+                "x": 285,
+                "y": 283,
+                "font_size": 19,
                 "font_type": "nanum_myeongjo",
                 "font_color": [0, 0, 0],
-                "stroke_width": 0.35,
+                "stroke_width": 0.7,
                 "stroke_fill": "#000000",
                 "effects": { "blur": 0.5, "noise": 0, "fade": 0.5 }
             },
             "issuer": {
                 "x": 216,
                 "y": 304,
-                "font_size": 21,
+                "font_size": 22,
                 "font_type": "nanum_square",
                 "font_color": [0, 0, 0],
-                "stroke_width": 0.2,
+                "stroke_width": 0.7,
                 "stroke_fill": "#000000",
                 "effects": { "blur": 0.5, "noise": 5, "fade": 0.49 }
             }
