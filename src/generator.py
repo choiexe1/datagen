@@ -9,6 +9,7 @@ import random
 from pathlib import Path
 from PIL import Image, ImageFilter
 import numpy as np
+import cv2
 
 from trdg import computer_text_generator
 from src.fake_data import generate_single_record
@@ -161,7 +162,7 @@ class IDCardGenerator:
         face_region = template_config["face_region"]
         face_effects = face_region.get("effects", {})
 
-        # 템플릿 로드
+        # 템플릿 로드 (투명 배경 유지)
         template = Image.open(self.assets_dir / template_path).convert("RGBA")
 
         # 얼굴 이미지 로드
@@ -385,6 +386,317 @@ class IDCardGenerator:
 
         return labels
 
+    # ========== Augmentation ==========
+
+    def _add_shadow(self, img: np.ndarray) -> np.ndarray:
+        """그림자 효과 추가 (손/스마트폰에 의한 그림자)"""
+        h, w = img.shape[:2]
+        shadow_mask = np.ones((h, w), dtype=np.float32)
+
+        # 랜덤 그림자 타입
+        shadow_type = random.choice(['corner', 'edge', 'diagonal'])
+
+        if shadow_type == 'corner':
+            # 모서리 그림자
+            corner = random.choice(['tl', 'tr', 'bl', 'br'])
+            radius = random.randint(int(min(h, w) * 0.3), int(min(h, w) * 0.6))
+
+            if corner == 'tl':
+                cv2.circle(shadow_mask, (0, 0), radius, 0.4, -1)
+            elif corner == 'tr':
+                cv2.circle(shadow_mask, (w, 0), radius, 0.4, -1)
+            elif corner == 'bl':
+                cv2.circle(shadow_mask, (0, h), radius, 0.4, -1)
+            else:
+                cv2.circle(shadow_mask, (w, h), radius, 0.4, -1)
+
+        elif shadow_type == 'edge':
+            # 가장자리 그림자
+            edge = random.choice(['top', 'bottom', 'left', 'right'])
+            shadow_width = random.randint(int(min(h, w) * 0.1), int(min(h, w) * 0.25))
+
+            if edge == 'top':
+                shadow_mask[:shadow_width, :] = 0.5
+            elif edge == 'bottom':
+                shadow_mask[-shadow_width:, :] = 0.5
+            elif edge == 'left':
+                shadow_mask[:, :shadow_width] = 0.5
+            else:
+                shadow_mask[:, -shadow_width:] = 0.5
+
+        else:  # diagonal
+            # 대각선 그림자
+            pts = np.array([
+                [0, 0],
+                [w * random.uniform(0.3, 0.6), 0],
+                [0, h * random.uniform(0.3, 0.6)]
+            ], dtype=np.int32)
+            if random.random() < 0.5:
+                pts[:, 0] = w - pts[:, 0]
+            if random.random() < 0.5:
+                pts[:, 1] = h - pts[:, 1]
+            cv2.fillPoly(shadow_mask, [pts], 0.45)
+
+        # 그림자 경계 부드럽게
+        shadow_mask = cv2.GaussianBlur(shadow_mask, (51, 51), 0)
+
+        # 적용
+        img = img.astype(np.float32)
+        for c in range(3):
+            img[:, :, c] = img[:, :, c] * shadow_mask
+        return np.clip(img, 0, 255).astype(np.uint8)
+
+    def _add_glare(self, img: np.ndarray) -> np.ndarray:
+        """글레어/반사 효과 추가 (조명 반사)"""
+        h, w = img.shape[:2]
+        glare_mask = np.zeros((h, w), dtype=np.float32)
+
+        # 글레어 위치 (랜덤)
+        cx = random.randint(int(w * 0.2), int(w * 0.8))
+        cy = random.randint(int(h * 0.2), int(h * 0.8))
+
+        # 타원형 글레어
+        axes = (random.randint(30, 80), random.randint(20, 50))
+        angle = random.randint(0, 180)
+        intensity = random.uniform(0.3, 0.7)
+
+        cv2.ellipse(glare_mask, (cx, cy), axes, angle, 0, 360, intensity, -1)
+
+        # 글레어 경계 부드럽게
+        glare_mask = cv2.GaussianBlur(glare_mask, (31, 31), 0)
+
+        # 적용 (밝게)
+        img = img.astype(np.float32)
+        for c in range(3):
+            img[:, :, c] = img[:, :, c] + (255 - img[:, :, c]) * glare_mask
+        return np.clip(img, 0, 255).astype(np.uint8)
+
+    def _add_paper_texture(self, img: np.ndarray) -> np.ndarray:
+        """종이 질감/주름 효과 추가 (오래된 신분증)"""
+        h, w = img.shape[:2]
+        result = img.copy().astype(np.float32)
+
+        effect_type = random.choice(['fold', 'scratch', 'wear', 'crumple'])
+
+        if effect_type == 'fold':
+            # 접힌 자국 (1-2개의 선)
+            num_folds = random.randint(1, 2)
+            for _ in range(num_folds):
+                is_horizontal = random.choice([True, False])
+
+                if is_horizontal:
+                    y = random.randint(int(h * 0.2), int(h * 0.8))
+                    thickness = random.randint(2, 5)
+
+                    # 접힌 부분 어둡게
+                    dark_line = np.zeros((h, w), dtype=np.float32)
+                    cv2.line(dark_line, (0, y), (w, y), 0.15, thickness)
+                    dark_line = cv2.GaussianBlur(dark_line, (7, 7), 0)
+
+                    # 접힌 부분 양옆 밝게 (하이라이트)
+                    cv2.line(dark_line, (0, y - thickness), (w, y - thickness), -0.08, 1)
+                    cv2.line(dark_line, (0, y + thickness), (w, y + thickness), -0.08, 1)
+                else:
+                    x = random.randint(int(w * 0.2), int(w * 0.8))
+                    thickness = random.randint(2, 5)
+
+                    dark_line = np.zeros((h, w), dtype=np.float32)
+                    cv2.line(dark_line, (x, 0), (x, h), 0.15, thickness)
+                    dark_line = cv2.GaussianBlur(dark_line, (7, 7), 0)
+
+                    cv2.line(dark_line, (x - thickness, 0), (x - thickness, h), -0.08, 1)
+                    cv2.line(dark_line, (x + thickness, 0), (x + thickness, h), -0.08, 1)
+
+                dark_line = cv2.GaussianBlur(dark_line, (5, 5), 0)
+                for c in range(3):
+                    result[:, :, c] = result[:, :, c] * (1 - dark_line)
+
+        elif effect_type == 'scratch':
+            # 긁힌 자국 (여러 개의 가는 선)
+            num_scratches = random.randint(3, 8)
+            scratch_mask = np.zeros((h, w), dtype=np.float32)
+
+            for _ in range(num_scratches):
+                x1 = random.randint(0, w)
+                y1 = random.randint(0, h)
+                length = random.randint(20, 80)
+                angle = random.uniform(0, 2 * np.pi)
+
+                x2 = int(x1 + length * np.cos(angle))
+                y2 = int(y1 + length * np.sin(angle))
+
+                intensity = random.uniform(0.05, 0.15)
+                cv2.line(scratch_mask, (x1, y1), (x2, y2), intensity, 1)
+
+            scratch_mask = cv2.GaussianBlur(scratch_mask, (3, 3), 0)
+            for c in range(3):
+                result[:, :, c] = result[:, :, c] * (1 - scratch_mask) + 255 * scratch_mask * 0.3
+
+        elif effect_type == 'wear':
+            # 모서리/가장자리 마모
+            wear_mask = np.zeros((h, w), dtype=np.float32)
+
+            # 모서리 마모
+            corners = [(0, 0), (w, 0), (0, h), (w, h)]
+            for cx, cy in corners:
+                if random.random() < 0.6:
+                    radius = random.randint(15, 40)
+                    intensity = random.uniform(0.1, 0.25)
+                    cv2.circle(wear_mask, (cx, cy), radius, intensity, -1)
+
+            # 가장자리 마모
+            if random.random() < 0.5:
+                edge = random.choice(['top', 'bottom', 'left', 'right'])
+                if edge == 'top':
+                    wear_mask[:8, :] = random.uniform(0.05, 0.15)
+                elif edge == 'bottom':
+                    wear_mask[-8:, :] = random.uniform(0.05, 0.15)
+                elif edge == 'left':
+                    wear_mask[:, :8] = random.uniform(0.05, 0.15)
+                else:
+                    wear_mask[:, -8:] = random.uniform(0.05, 0.15)
+
+            wear_mask = cv2.GaussianBlur(wear_mask, (11, 11), 0)
+
+            # 마모 부분 밝게 (색이 바래는 효과)
+            for c in range(3):
+                result[:, :, c] = result[:, :, c] + (255 - result[:, :, c]) * wear_mask * 0.5
+
+        else:  # crumple
+            # 구겨진 효과 (노이즈 기반 밝기 변화)
+            noise = np.random.rand(h // 8, w // 8).astype(np.float32)
+            noise = cv2.resize(noise, (w, h), interpolation=cv2.INTER_CUBIC)
+            noise = cv2.GaussianBlur(noise, (21, 21), 0)
+
+            # 노이즈를 밝기 변화로 변환
+            noise = (noise - 0.5) * 0.15  # -0.075 ~ 0.075 범위
+
+            for c in range(3):
+                result[:, :, c] = result[:, :, c] * (1 + noise)
+
+        return np.clip(result, 0, 255).astype(np.uint8)
+
+    def _add_motion_blur(self, img: np.ndarray) -> np.ndarray:
+        """모션 블러 효과 (손 떨림)"""
+        # 블러 강도와 방향
+        kernel_size = random.choice([5, 7, 9, 11])
+        angle = random.randint(0, 180)
+
+        # 방향성 블러 커널 생성
+        kernel = np.zeros((kernel_size, kernel_size), dtype=np.float32)
+        kernel[kernel_size // 2, :] = 1.0 / kernel_size
+
+        # 커널 회전
+        center = (kernel_size // 2, kernel_size // 2)
+        rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+        kernel = cv2.warpAffine(kernel, rotation_matrix, (kernel_size, kernel_size))
+
+        # 커널 정규화
+        kernel = kernel / kernel.sum()
+
+        # 적용
+        return cv2.filter2D(img, -1, kernel)
+
+    def apply_augmentation(self, img: Image.Image) -> Image.Image:
+        """
+        합성 완료된 이미지에 랜덤 변형 적용
+        - 기본: 회전, 원근, 밝기, 대비, 색온도, 노이즈, 블러
+        - EKYC: 그림자, 글레어, 손가락 가림, 모션 블러
+        """
+        img_array = np.array(img)
+
+        # BGR로 변환 (cv2용)
+        if img_array.shape[2] == 4:
+            img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGBA2BGR)
+        else:
+            img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+
+        h, w = img_bgr.shape[:2]
+
+        # 1. 회전 (±12°)
+        angle = random.uniform(-12, 12)
+        center = (w // 2, h // 2)
+        rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+
+        cos = abs(rotation_matrix[0, 0])
+        sin = abs(rotation_matrix[0, 1])
+        new_w = int(h * sin + w * cos)
+        new_h = int(h * cos + w * sin)
+        rotation_matrix[0, 2] += (new_w - w) / 2
+        rotation_matrix[1, 2] += (new_h - h) / 2
+
+        bg_color = random.randint(180, 240)
+        img_bgr = cv2.warpAffine(img_bgr, rotation_matrix, (new_w, new_h),
+                                  borderMode=cv2.BORDER_CONSTANT,
+                                  borderValue=(bg_color, bg_color, bg_color))
+
+        # 2. 원근 변환
+        h, w = img_bgr.shape[:2]
+        perspective_strength = random.uniform(0.02, 0.08)
+        direction = random.choice(['top', 'bottom', 'left', 'right'])
+        src_pts = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+
+        offset = int(min(w, h) * perspective_strength)
+        if direction == 'top':
+            dst_pts = np.float32([[offset, 0], [w - offset, 0], [w, h], [0, h]])
+        elif direction == 'bottom':
+            dst_pts = np.float32([[0, 0], [w, 0], [w - offset, h], [offset, h]])
+        elif direction == 'left':
+            dst_pts = np.float32([[0, offset], [w, 0], [w, h], [0, h - offset]])
+        else:
+            dst_pts = np.float32([[0, 0], [w, offset], [w, h - offset], [0, h]])
+
+        perspective_matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
+        img_bgr = cv2.warpPerspective(img_bgr, perspective_matrix, (w, h),
+                                       borderMode=cv2.BORDER_CONSTANT,
+                                       borderValue=(bg_color, bg_color, bg_color))
+
+        # 3. 밝기 변형
+        brightness_factor = random.uniform(0.8, 1.2)
+        img_bgr = np.clip(img_bgr * brightness_factor, 0, 255).astype(np.uint8)
+
+        # 4. 대비 변형
+        contrast_factor = random.uniform(0.85, 1.15)
+        img_bgr = np.clip(128 + (img_bgr.astype(np.float32) - 128) * contrast_factor, 0, 255).astype(np.uint8)
+
+        # 5. 색온도 변형
+        temp_shift = random.uniform(-15, 15)
+        img_bgr = img_bgr.astype(np.float32)
+        img_bgr[:, :, 0] = np.clip(img_bgr[:, :, 0] - temp_shift, 0, 255)
+        img_bgr[:, :, 2] = np.clip(img_bgr[:, :, 2] + temp_shift, 0, 255)
+        img_bgr = img_bgr.astype(np.uint8)
+
+        # 6. 그림자 (40% 확률)
+        if random.random() < 0.4:
+            img_bgr = self._add_shadow(img_bgr)
+
+        # 7. 글레어/반사 (30% 확률)
+        if random.random() < 0.3:
+            img_bgr = self._add_glare(img_bgr)
+
+        # 8. 종이 질감/주름 (35% 확률)
+        if random.random() < 0.35:
+            img_bgr = self._add_paper_texture(img_bgr)
+
+        # 9. 모션 블러 (20% 확률)
+        if random.random() < 0.2:
+            img_bgr = self._add_motion_blur(img_bgr)
+
+        # 10. 노이즈 (50% 확률)
+        if random.random() < 0.5:
+            noise_level = random.randint(3, 12)
+            noise = np.random.randint(-noise_level, noise_level + 1, img_bgr.shape, dtype=np.int16)
+            img_bgr = np.clip(img_bgr.astype(np.int16) + noise, 0, 255).astype(np.uint8)
+
+        # 11. 가우시안 블러 (30% 확률)
+        if random.random() < 0.3:
+            blur_size = random.choice([3, 5])
+            img_bgr = cv2.GaussianBlur(img_bgr, (blur_size, blur_size), 0)
+
+        # RGB로 변환 후 PIL Image 반환
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        return Image.fromarray(img_rgb)
+
     # ========== 통합 생성 ==========
 
     def generate_single(
@@ -393,6 +705,7 @@ class IDCardGenerator:
         template_path: str = None,
         is_male: bool = None,
         data: dict = None,
+        augment: bool = False,
     ) -> tuple[str, dict]:
         """단일 주민등록증 생성"""
         # 템플릿 선택
@@ -413,7 +726,7 @@ class IDCardGenerator:
             data = generate_single_record()
 
         # 출력 경로
-        output_path = self.output_dir / f"id_card_{index:06d}.jpg"
+        output_path = self.output_dir / f"id_card_{index:06d}.png"
         label_path = self.output_dir / f"id_card_{index:06d}.txt"
 
         # 1. 얼굴 합성
@@ -422,9 +735,12 @@ class IDCardGenerator:
         # 2. 텍스트 합성
         labels = self.composite_text(image, data, template_config)
 
-        # 저장
-        image_rgb = image.convert("RGB")
-        image_rgb.save(output_path, "JPEG", quality=95)
+        # 3. Augmentation 적용 (옵션)
+        if augment:
+            image = self.apply_augmentation(image)
+
+        # 저장 (PNG로 투명 배경 유지)
+        image.save(output_path, "PNG")
 
         # 레이블 저장
         with open(label_path, "w", encoding="utf-8") as f:
@@ -447,13 +763,14 @@ class IDCardGenerator:
         self,
         count: int,
         template_path: str = None,
+        augment: bool = False,
     ) -> list[tuple[str, dict]]:
         """배치 생성"""
         results = []
 
         if template_path:
             for i in range(count):
-                result = self.generate_single(i, template_path=template_path)
+                result = self.generate_single(i, template_path=template_path, augment=augment)
                 results.append(result)
                 if (i + 1) % 10 == 0:
                     print(f"생성: {i + 1}/{count}")
@@ -462,7 +779,7 @@ class IDCardGenerator:
             idx = 0
             for template in self.template_paths:
                 for i in range(count):
-                    result = self.generate_single(idx, template_path=template)
+                    result = self.generate_single(idx, template_path=template, augment=augment)
                     results.append(result)
                     idx += 1
                     if idx % 10 == 0:
@@ -471,6 +788,6 @@ class IDCardGenerator:
         print(f"✅ {len(results)}개 주민등록증 생성 완료")
         return results
 
-    def generate_all_templates(self, count_per_template: int = 1) -> list[tuple[str, dict]]:
+    def generate_all_templates(self, count_per_template: int = 1, augment: bool = False) -> list[tuple[str, dict]]:
         """모든 템플릿에서 각각 count_per_template개씩 생성"""
-        return self.generate_batch(count_per_template, template_path=None)
+        return self.generate_batch(count_per_template, template_path=None, augment=augment)

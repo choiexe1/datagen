@@ -1,13 +1,13 @@
 {
-    "template_path": "templates/id_template_empty_03.png",
+    "template_path": "templates/id_3.png",
     "face_region": {
-        "x": 407,
-        "y": 14,
-        "width": 179,
-        "height": 297,
+        "x": 399,
+        "y": 41,
+        "width": 215,
+        "height": 250,
         "rotation": 0,
         "effects": {
-            "blur": 0.9,
+            "blur": 0.98,
             "noise": 9,
             "aged": true,
             "contrast": 0.88,
@@ -15,71 +15,72 @@
         }
     },
     "text": {
-        "rotation": -1,
+        "rotation": -0.3,
         "fields": {
             "name": {
-                "x": 135,
-                "y": 109,
-                "font_size": 27,
+                "x": 100,
+                "y": 107,
+                "font_size": 30,
                 "font_type": "human_myeongjo",
                 "font_color": [0, 0, 0],
-                "stroke_width": 0.56,
+                "stroke_width": 0.7,
                 "stroke_fill": "#000000",
                 "effects": { "blur": 0.6, "noise": 3, "fade": 0.5 }
             },
             "name_hanja": {
-                "x": 221,
-                "y": 110,
-                "font_size": 27,
+                "x": 194,
+                "y": 108,
+                "font_size": 31,
                 "font_type": "nanum_myeongjo",
                 "font_color": [0, 0, 0],
                 "space_width": 0.2,
-                "stroke_width": 0.56,
+                "stroke_width": 0.6,
                 "stroke_fill": "#000000",
-                "effects": { "blur": 0.7, "noise": 3, "fade": 0.5 }
+                "effects": { "blur": 0.6, "noise": 3, "fade": 0.54 }
             },
             "jumin": {
-                "x": 128,
-                "y": 152,
+                "x": 91,
+                "y": 162,
+                "font_size": 23,
+                "font_type": "sans",
+                "font_color": [0, 0, 0],
+                "space_width": 0.9,
+                "stroke_width": 0.7,
+                "stroke_fill": "#000000",
+                "effects": { "blur": 0.5, "noise": 0, "fade": 0.53 }
+            },
+            "address": {
+                "x": 60,
+                "y": 208,
+                "font_size": 21,
+                "font_type": "nanum_square",
+                "font_color": [0, 0, 0],
+                "max_width": 302,
+                "line_height": 25,
+                "stroke_width": 0.6,
+                "stroke_fill": "#000000",
+                "effects": { "blur": 0.5, "noise": 2, "fade": 0.51 }
+            },
+            "issue_date": {
+                "x": 267,
+                "y": 312,
                 "font_size": 21,
                 "font_type": "sans",
                 "font_color": [0, 0, 0],
-                "space_width": 0.7,
-                "stroke_width": 0.6,
+                "stroke_width": 0.47,
+                "space_width": 3.2,
                 "stroke_fill": "#000000",
-                "effects": { "blur": 0.3, "noise": 0, "fade": 0.58 }
-            },
-            "address": {
-                "x": 115,
-                "y": 199,
-                "font_size": 19,
-                "font_type": "nanum_square",
-                "font_color": [0, 0, 0],
-                "max_width": 230,
-                "line_height": 21,
-                "stroke_width": 0.6,
-                "stroke_fill": "#000000",
-                "effects": { "blur": 0.1, "noise": 0, "fade": 0.56 }
-            },
-            "issue_date": {
-                "x": 297,
-                "y": 279,
-                "font_size": 19,
-                "font_type": "nanum_myeongjo",
-                "font_color": [0, 0, 0],
-                "stroke_width": 0.53,
-                "stroke_fill": "#000000",
-                "effects": { "blur": 0.2, "noise": 0, "fade": 0.5 }
+                "effects": { "blur": 0.5, "noise": 0, "fade": 0.5 }
             },
             "issuer": {
-                "x": 248,
-                "y": 304,
-                "font_size": 22,
+                "x": 203,
+                "y": 339,
+                "font_size": 25,
                 "font_type": "nanum_square",
                 "font_color": [0, 0, 0],
                 "stroke_width": 0.6,
                 "stroke_fill": "#000000",
-                "effects": { "blur": 0.5, "noise": 5, "fade": 0.49 }
+                "effects": { "blur": 0.5, "noise": 5, "fade": 0.53 }
             }
         }
     }

@@ -25,9 +25,14 @@ def main():
         help="사용 가능한 템플릿 목록 출력",
     )
     parser.add_argument(
-        "-r", "--random",
+        "--per-template",
         action="store_true",
-        help="템플릿 랜덤 분배 (총 n개 생성, 템플릿 랜덤 선택)",
+        help="템플릿당 n개씩 생성 (기본: 총 n개를 랜덤 분배)",
+    )
+    parser.add_argument(
+        "-a", "--augment",
+        action="store_true",
+        help="이미지 변형 적용 (회전, 원근, 밝기, 대비, 색온도, 노이즈, 블러)",
     )
 
     args = parser.parse_args()
@@ -59,20 +64,23 @@ def main():
 
     # 생성
     print("\n주민등록증 생성 시작...")
+    if args.augment:
+        print("🔄 Augmentation 활성화")
 
     if template_path:
-        results = generator.generate_batch(args.count, template_path=template_path)
-    elif args.random:
-        # 랜덤 분배: 총 n개, 템플릿 랜덤 선택
+        results = generator.generate_batch(args.count, template_path=template_path, augment=args.augment)
+    elif args.per_template:
+        # 템플릿당 n개씩 생성
+        results = generator.generate_all_templates(count_per_template=args.count, augment=args.augment)
+    else:
+        # 기본: 총 n개, 템플릿 랜덤 선택
         results = []
         for i in range(args.count):
-            result = generator.generate_single(i)  # template_path=None이면 랜덤
+            result = generator.generate_single(i, augment=args.augment)
             results.append(result)
             if (i + 1) % 10 == 0:
                 print(f"생성: {i + 1}/{args.count}")
         print(f"✅ {len(results)}개 주민등록증 생성 완료")
-    else:
-        results = generator.generate_all_templates(count_per_template=args.count)
 
     print(f"\n생성된 파일:")
     for img_path, meta in results:
